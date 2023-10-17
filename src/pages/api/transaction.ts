@@ -9,7 +9,10 @@ type GetResponse = {
 
 export type PostRequest = {
   account: string,
+  amount: number,
+  address: string,
 };
+
 
 export type PostResponse = {
   transaction: string,
@@ -33,7 +36,9 @@ function get(res: NextApiResponse<GetResponse>) {
 async function postImpl(
   network: Cluster,
   account: PublicKey,
-  reference: PublicKey
+  reference: PublicKey,
+  amount: number,
+  address: string
 ): Promise<PostResponse> {
   // Can also use a custom RPC here
   const endpoint = clusterApiUrl(network);
@@ -50,9 +55,10 @@ async function postImpl(
 
   const transferInstruction = SystemProgram.transfer({
     fromPubkey: account,
-    toPubkey: Keypair.generate().publicKey,
-    lamports: LAMPORTS_PER_SOL / 1000,
+    toPubkey: new PublicKey(address),
+    lamports: amount,
   });
+  
 
   // Add reference as a key to the instruction
   // This allows us to listen for this transaction
@@ -96,7 +102,7 @@ async function post(
   req: NextApiRequest,
   res: NextApiResponse<PostResponse | PostError>
 ) {
-  const { account } = req.body as PostRequest
+  const { account, amount, address } = req.body as PostRequest;
   console.log(req.body)
   if (!account) {
     res.status(400).json({ error: 'No account provided' })
@@ -120,7 +126,10 @@ async function post(
       network,
       new PublicKey(account),
       new PublicKey(reference),
+      amount,  
+address // assuming the address is a valid Solana public key
     );
+    
     res.status(200).json(postResponse)
   } catch (error) {
     console.error(error)

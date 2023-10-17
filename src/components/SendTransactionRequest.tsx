@@ -2,7 +2,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, Transaction, TransactionSignature } from '@solana/web3.js';
 import axios from 'axios';
 import { PostError, PostResponse } from 'pages/api/transaction';
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { notify } from '../utils/notifications';
 import { useNetworkConfiguration } from '../contexts/NetworkConfigurationProvider'
 
@@ -11,6 +11,8 @@ type SendTransactionRequestProps = {
 };
 
 export const SendTransactionRequest: FC<SendTransactionRequestProps> = ({ reference }) => {
+  const [amount, setAmount] = useState<number>(0);
+  const [address, setAddress] = useState<string>('');
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
   const { networkConfiguration } = useNetworkConfiguration();
@@ -26,8 +28,10 @@ export const SendTransactionRequest: FC<SendTransactionRequestProps> = ({ refere
     try {
       // Request the transaction from transaction request API
       const { data } = await axios.post(`/api/transaction?network=${networkConfiguration}&reference=${reference.toBase58()}`, {
-        account: publicKey
-      }, {
+        account: publicKey,
+        amount: amount,
+        address: address
+      },{
         // Don't throw for 4xx responses, we handle them
         validateStatus: (s) => s < 500
       });
@@ -68,6 +72,18 @@ export const SendTransactionRequest: FC<SendTransactionRequestProps> = ({ refere
         className="group w-60 m-2 btn animate-pulse disabled:animate-none bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-pink-500 hover:to-yellow-500 ... "
         onClick={onClick} disabled={!publicKey}
       >
+            <input
+      type="number"
+      placeholder="Amount"
+      value={amount}
+      onChange={(e) => setAmount(Number(e.target.value))}
+    />
+    <input
+      type="text"
+      placeholder="Address"
+      value={address}
+      onChange={(e) => setAddress(e.target.value)}
+    />
         <div className="hidden group-disabled:block ">
           Wallet not connected
         </div>
