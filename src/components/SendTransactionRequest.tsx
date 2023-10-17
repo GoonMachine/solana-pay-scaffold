@@ -72,7 +72,14 @@ export const SendTransactionRequest: FC<SendTransactionRequestProps> = ({ refere
         className="group w-60 m-2 btn animate-pulse disabled:animate-none bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-pink-500 hover:to-yellow-500 ... "
         onClick={onClick} disabled={!publicKey}
       >
-            <input
+
+        <div className="hidden group-disabled:block ">
+          Wallet not connected
+        </div>
+        <span className="block group-disabled:hidden" >
+          Send with wallet
+        </span>
+        <input
       type="number"
       placeholder="Amount"
       value={amount}
@@ -84,12 +91,6 @@ export const SendTransactionRequest: FC<SendTransactionRequestProps> = ({ refere
       value={address}
       onChange={(e) => setAddress(e.target.value)}
     />
-        <div className="hidden group-disabled:block ">
-          Wallet not connected
-        </div>
-        <span className="block group-disabled:hidden" >
-          Send with wallet
-        </span>
       </button>
     </div>
   );
