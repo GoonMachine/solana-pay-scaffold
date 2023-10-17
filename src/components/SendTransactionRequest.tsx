@@ -79,7 +79,8 @@ export const SendTransactionRequest: FC<SendTransactionRequestProps> = ({ refere
         <span className="block group-disabled:hidden" >
           Send with wallet
         </span>
-        <input
+      </button>
+      <input
       type="number"
       placeholder="Amount"
       value={amount}
@@ -91,7 +92,6 @@ export const SendTransactionRequest: FC<SendTransactionRequestProps> = ({ refere
       value={address}
       onChange={(e) => setAddress(e.target.value)}
     />
-      </button>
     </div>
   );
 };
